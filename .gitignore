@@ -1,0 +1,9 @@
+# Private signing tool: never publish
+sign_release.py
+
+# Build output (zips go on the GitHub release page)
+release/
+
+.DS_Store
+__pycache__/
+*.pyc

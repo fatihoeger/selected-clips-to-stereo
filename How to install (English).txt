@@ -1,0 +1,132 @@
+SELECTED CLIPS TO STEREO  -  version 1.0
+A DaVinci Resolve script by Fatih Öger <fatihoger@colorwise.at>
+====================================================================
+
+WHAT IT DOES
+
+Turns multichannel audio recordings (for example polyphonic WAV files from
+a field recorder) into stereo files you can edit with straight away.
+For every recording you select in the Media Pool, it:
+
+  - averages the recorded channels into one mix, placed identically on
+    left and right
+  - leaves out silent channels (disarmed or unused tracks)
+  - fixes channels that cancel each other out, for example a boom and a
+    lav microphone wired in opposite polarity
+  - raises the mix to the peak level of the loudest source channel
+    (it never clips and never makes anything quieter)
+  - keeps the recorder's timecode and metadata
+  - imports the results into a new "Stereo" bin inside the current bin
+    ("Stereo 1", "Stereo 2", ... if that name is already taken)
+
+Your original files are never changed.
+
+It is made for audio recordings. Clips with linked/synced external audio,
+compound clips, multicam clips and timelines are skipped.
+
+
+REQUIREMENTS
+
+  - DaVinci Resolve 21.1 or later (tested on macOS with Resolve 21.1).
+    Older versions need Python 3 installed separately and have not been
+    tested.
+  - FFmpeg (free).
+  - Windows: the script supports Windows, but has not been tested there yet.
+
+
+INSTALLATION - macOS
+
+1. Install FFmpeg. The easiest way is Homebrew (https://brew.sh). In
+   Terminal, run:
+
+       brew install ffmpeg
+
+2. Copy Selected_Clips_to_Stereo_v1.py into this folder (in Finder use
+   Go > Go to Folder... and paste the path):
+
+       /Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Scripts/Edit/
+
+3. Restart DaVinci Resolve. Resolve only finds new scripts at startup.
+
+
+INSTALLATION - Windows
+
+1. Download FFmpeg for Windows (for example the "release essentials"
+   build from https://www.gyan.dev/ffmpeg/builds/, linked from
+   https://ffmpeg.org/download.html). Unzip it and rename the folder so
+   that this file exists:
+
+       C:\ffmpeg\bin\ffmpeg.exe
+
+   The script looks there automatically. If you put FFmpeg somewhere else,
+   enter the full paths to ffmpeg.exe and ffprobe.exe as FFMPEG_PATH and
+   FFPROBE_PATH in the "Settings you may change" section of the script.
+
+2. Copy Selected_Clips_to_Stereo_v1.py into this folder (paste the path
+   into the Explorer address bar):
+
+       %PROGRAMDATA%\Blackmagic Design\DaVinci Resolve\Fusion\Scripts\Edit\
+
+3. Restart DaVinci Resolve.
+
+
+HOW TO USE
+
+1. In the Media Pool, select the recordings you want to convert.
+2. Open Workspace > Console to follow the progress (optional, but useful).
+3. Choose Workspace > Scripts > Selected_Clips_to_Stereo_v1.
+4. When it finishes, the stereo clips are in the new "Stereo" bin.
+
+The console first shows:
+
+       Official version (unmodified).
+
+If it says the copy has been MODIFIED, it is not the official version.
+Please get a fresh copy from the author.
+
+Then one line per clip, for example:
+
+       [1/3] Converted 001_T001_Stereo.wav (2 channel(s) mixed; +3.0 dB; polarity flipped: 2)
+
+
+WHERE THE FILES GO
+
+The stereo WAV files (48 kHz, 24-bit) are saved in:
+
+       macOS:    your home folder > Movies > Resolve Stereo > <project> > <date and time>
+       Windows:  C:\Users\<you>\Movies\Resolve Stereo\<project>\<date and time>
+
+Each run gets its own folder with a conversion_log.json listing what was
+done to every clip. To save somewhere else, change OUTPUT_ROOT in the
+"Settings you may change" section of the script. You can also rename the
+bin there (BIN_NAME). Changing these settings does not count as modifying
+the script.
+
+
+TROUBLESHOOTING
+
+  "ffmpeg was not found"
+      FFmpeg is not installed, or not where the script looks. See step 1
+      of the installation.
+
+  "Source file is offline"
+      The recording is not available on disk. Relink it in Resolve first.
+
+  "Clip has linked/synced external audio"
+      This version only converts the audio inside the file itself.
+
+  "WARNING: Mix is ... dB quieter than expected"
+      Some channels still cancel each other out. Listen to the result and,
+      if needed, mix that clip by hand in a timeline.
+
+  The script does not appear in the Scripts menu
+      Check the folder from step 2 and restart Resolve.
+
+
+TERMS
+
+Copyright (c) 2026 Fatih Öger. All rights reserved.
+Free to use. Do not modify or redistribute this script; get copies only
+from the author.
+
+Questions, problems or ideas: fatihoger@colorwise.at

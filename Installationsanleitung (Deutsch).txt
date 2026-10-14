@@ -1,0 +1,141 @@
+SELECTED CLIPS TO STEREO  -  Version 1.0
+Ein DaVinci-Resolve-Skript von Fatih Öger <fatihoger@colorwise.at>
+====================================================================
+
+WAS ES MACHT
+
+Wandelt mehrkanalige Tonaufnahmen (zum Beispiel polyphone WAV-Dateien
+eines Field-Recorders) in Stereodateien um, mit denen Sie direkt schneiden
+können. Für jede Aufnahme, die Sie im Media Pool auswählen:
+
+  - werden die aufgenommenen Kanäle zu einer Mischung gemittelt, die links
+    und rechts identisch anliegt
+  - werden stille Kanäle (nicht scharfgeschaltete oder ungenutzte Spuren)
+    weggelassen
+  - werden Kanäle korrigiert, die sich gegenseitig auslöschen, zum Beispiel
+    Angel und Ansteckmikrofon mit vertauschter Polarität
+  - wird die Mischung auf den Spitzenpegel des lautesten Quellkanals
+    angehoben (sie übersteuert nie und wird nie leiser gemacht)
+  - bleiben Timecode und Metadaten des Recorders erhalten
+  - werden die Ergebnisse in einen neuen Bin "Stereo" innerhalb des
+    aktuellen Bins importiert ("Stereo 1", "Stereo 2", ... falls der Name
+    schon vergeben ist)
+
+Ihre Originaldateien werden nie verändert.
+
+Das Skript ist für Tonaufnahmen gedacht. Clips mit verknüpftem/synchroni-
+siertem externem Ton, Compound Clips, Multicam-Clips und Timelines werden
+übersprungen.
+
+
+VORAUSSETZUNGEN
+
+  - DaVinci Resolve 21.1 oder neuer (getestet auf macOS mit Resolve 21.1).
+    Ältere Versionen benötigen ein separat installiertes Python 3 und sind
+    nicht getestet.
+  - FFmpeg (kostenlos).
+  - Windows: Das Skript unterstützt Windows, wurde dort aber noch nicht
+    getestet.
+
+
+INSTALLATION - macOS
+
+1. FFmpeg installieren. Am einfachsten mit Homebrew (https://brew.sh).
+   Im Terminal eingeben:
+
+       brew install ffmpeg
+
+2. Selected_Clips_to_Stereo_v1.py in diesen Ordner kopieren (im Finder
+   Gehe zu > Gehe zum Ordner... wählen und den Pfad einfügen):
+
+       /Library/Application Support/Blackmagic Design/DaVinci Resolve/Fusion/Scripts/Edit/
+
+3. DaVinci Resolve neu starten. Resolve erkennt neue Skripte nur beim Start.
+
+
+INSTALLATION - Windows
+
+1. FFmpeg für Windows herunterladen (zum Beispiel den Build "release
+   essentials" von https://www.gyan.dev/ffmpeg/builds/, verlinkt auf
+   https://ffmpeg.org/download.html). Entpacken und den Ordner so
+   umbenennen, dass diese Datei existiert:
+
+       C:\ffmpeg\bin\ffmpeg.exe
+
+   Dort sucht das Skript automatisch. Liegt FFmpeg woanders, tragen Sie
+   die vollständigen Pfade zu ffmpeg.exe und ffprobe.exe bei FFMPEG_PATH
+   und FFPROBE_PATH im Abschnitt "Settings you may change" des Skripts ein.
+
+2. Selected_Clips_to_Stereo_v1.py in diesen Ordner kopieren (Pfad in die
+   Adresszeile des Explorers einfügen):
+
+       %PROGRAMDATA%\Blackmagic Design\DaVinci Resolve\Fusion\Scripts\Edit\
+
+3. DaVinci Resolve neu starten.
+
+
+VERWENDUNG
+
+1. Im Media Pool die Aufnahmen auswählen, die umgewandelt werden sollen.
+2. Workspace > Console öffnen, um den Fortschritt zu sehen (optional,
+   aber hilfreich).
+3. Workspace > Scripts > Selected_Clips_to_Stereo_v1 wählen.
+4. Danach liegen die Stereoclips im neuen Bin "Stereo".
+
+Die Konsole zeigt zuerst:
+
+       Official version (unmodified).
+
+Steht dort, dass die Kopie MODIFIED (verändert) wurde, ist es nicht die
+offizielle Version. Bitte holen Sie sich eine neue Kopie beim Autor.
+
+Danach eine Zeile pro Clip, zum Beispiel:
+
+       [1/3] Converted 001_T001_Stereo.wav (2 channel(s) mixed; +3.0 dB; polarity flipped: 2)
+
+(mixed = gemischte Kanäle, +3.0 dB = angehobener Pegel,
+polarity flipped = Kanal mit umgedrehter Polarität)
+
+
+WO DIE DATEIEN LANDEN
+
+Die Stereo-WAV-Dateien (48 kHz, 24 Bit) werden gespeichert unter:
+
+       macOS:    Benutzerordner > Filme (Movies) > Resolve Stereo > <Projekt> > <Datum und Uhrzeit>
+       Windows:  C:\Users\<Name>\Movies\Resolve Stereo\<Projekt>\<Datum und Uhrzeit>
+
+Jeder Durchlauf bekommt einen eigenen Ordner mit einer conversion_log.json,
+in der steht, was mit jedem Clip gemacht wurde. Für einen anderen
+Speicherort OUTPUT_ROOT im Abschnitt "Settings you may change" des Skripts
+ändern. Dort lässt sich auch der Bin umbenennen (BIN_NAME). Das Ändern
+dieser Einstellungen gilt nicht als Veränderung des Skripts.
+
+
+FEHLERBEHEBUNG
+
+  "ffmpeg was not found"
+      FFmpeg ist nicht installiert oder nicht dort, wo das Skript sucht.
+      Siehe Schritt 1 der Installation.
+
+  "Source file is offline"
+      Die Aufnahme ist nicht auf der Festplatte verfügbar. Zuerst in
+      Resolve neu verknüpfen (Relink).
+
+  "Clip has linked/synced external audio"
+      Diese Version wandelt nur den Ton um, der in der Datei selbst steckt.
+
+  "WARNING: Mix is ... dB quieter than expected"
+      Einige Kanäle löschen sich weiterhin aus. Das Ergebnis anhören und
+      den Clip bei Bedarf von Hand in einer Timeline mischen.
+
+  Das Skript erscheint nicht im Menü Scripts
+      Ordner aus Schritt 2 prüfen und Resolve neu starten.
+
+
+NUTZUNGSBEDINGUNGEN
+
+Copyright (c) 2026 Fatih Öger. Alle Rechte vorbehalten.
+Kostenlos nutzbar. Das Skript darf nicht verändert oder weitergegeben
+werden; Kopien bitte nur direkt beim Autor beziehen.
+
+Fragen, Probleme oder Ideen: fatihoger@colorwise.at
